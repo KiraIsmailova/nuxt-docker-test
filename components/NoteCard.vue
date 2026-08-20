@@ -1,5 +1,5 @@
 <template>
-  <div class="note-card">
+  <div class="note-card" @click="$emit('edit')">
     <h2 class="note-card__title">{{ note.title }}</h2>
     <ul class="note-card__list">
       <li v-for="todo in visibleTodos" :key="todo.id" class="note-card__todo">
@@ -13,6 +13,10 @@
     >
       еще задач: {{ note.todos.length - (limit ?? note.todos.length) }}
     </p>
+    <div class="node-card__actions" @click.stop>
+      <button class="btn btn-secondary" @click="$emit('edit')">Изменить</button>
+      <button class="btn btn-danger" @click="$emit('delete')">Удалить</button>
+    </div>
   </div>
 </template>
 
@@ -26,6 +30,11 @@ interface Props {
 
 const props = defineProps<Props>();
 
+defineEmits<{
+  (e: "edit"): void;
+  (e: "delete"): void;
+}>();
+
 const visibleTodos = computed(() => {
   return props.limit === undefined
     ? props.note.todos
@@ -35,10 +44,10 @@ const visibleTodos = computed(() => {
 
 <style lang="scss" scoped>
 .note-card {
-  border: 1px solid #dad1d1;
+  border: 1px solid #13b40b;
   border-radius: 8px;
   padding: 16px;
-  background-color: #f9ecda;
+  background-color: #eff4f0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
   &:hover {
@@ -68,6 +77,47 @@ const visibleTodos = computed(() => {
     font-size: 0.9em;
     color: #6a6363;
     text-align: center;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .btn {
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background: #f5f5f5;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.2s;
+  }
+
+  .btn:hover {
+    background: #e0e0e0;
+  }
+
+  .btn-secondary {
+    background: #607d8b;
+    color: white;
+    border: none;
+  }
+
+  .btn-secondary:hover {
+    background: #546e7a;
+  }
+
+  .btn-danger {
+    background: #f44336;
+    color: white;
+    border: none;
+  }
+
+  .btn-danger:hover {
+    background: #e53935;
   }
 }
 </style>

@@ -1,8 +1,6 @@
 <template>
   <div class="layout">
-    <header class="layout__header">
-      <p>Проект "заметки"</p>
-    </header>
+    <Header />
     <main class="layout__main">
       <slot />
     </main>

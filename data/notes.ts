@@ -55,7 +55,7 @@ export const mockNotes: Note[] = [
     ],
   },
   {
-    id: 5,
+    id: 6,
     title: "Покупки в магазине косметики",
     todos: [
       { id: 1, text: "Спонж", completed: false },

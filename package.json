@@ -17,6 +17,10 @@
     "vue-router": "^5.2.0"
   },
   "devDependencies": {
-    "sass": "^1.102.0"
+    "@nuxt/test-utils": "^4.1.0",
+    "@vitest/ui": "^4.1.11",
+    "happy-dom": "^20.11.6",
+    "sass": "^1.102.0",
+    "vitest": "^4.1.11"
   }
 }

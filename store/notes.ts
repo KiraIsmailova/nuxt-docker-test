@@ -1,15 +1,11 @@
 import { defineStore } from "pinia";
 import type { Note } from "~/types/note";
 import { mockNotes } from "~/data/notes";
+import type { StorageSchema } from "~/types/storageSchema";
 
 const STORAGE_KEY = "notes_app_data_v1";
 const DRAFT_KEY_PREFIX = "notes_draft_";
 const SAVE_DEBOUNCE_MS = 500;
-
-interface StorageSchema {
-  version: number;
-  notes: Note[];
-}
 
 function loadInitialNotes(): Note[] {
   if (import.meta.client) {
@@ -130,8 +126,6 @@ export const useNotesStore = defineStore("notes", () => {
     }
   }
 
-  init();
-
   return {
     notes,
     addNote,
@@ -141,5 +135,6 @@ export const useNotesStore = defineStore("notes", () => {
     saveDraft,
     loadDraft,
     clearDraft,
+    init,
   };
 });
