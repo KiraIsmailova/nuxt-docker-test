@@ -13,9 +13,11 @@
     >
       еще задач: {{ note.todos.length - (limit ?? note.todos.length) }}
     </p>
-    <div class="node-card__actions" @click.stop>
-      <button class="btn btn-secondary" @click="$emit('edit')">Изменить</button>
-      <button class="btn btn-danger" @click="$emit('delete')">Удалить</button>
+    <div class="note-card__actions" @click.stop>
+      <BaseButton variant="secondary" @click="$emit('edit')"
+        >Изменить</BaseButton
+      >
+      <BaseButton variant="danger" @click="$emit('delete')">Удалить</BaseButton>
     </div>
   </div>
 </template>
@@ -49,6 +51,9 @@ const visibleTodos = computed(() => {
   padding: 16px;
   background-color: #eff4f0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 
   &:hover {
     cursor: pointer;
@@ -56,7 +61,12 @@ const visibleTodos = computed(() => {
 
   &__title {
     text-align: center;
-    margin: 0 0 12px;
+    font-size: 24px;
+    margin: 0;
+
+    @media (max-width: 576px) {
+      font-size: 20px;
+    }
   }
 
   &__list {
@@ -73,51 +83,15 @@ const visibleTodos = computed(() => {
   }
 
   &__more {
-    margin: 8px 0 0;
+    margin: 0;
     font-size: 0.9em;
     color: #6a6363;
-    text-align: center;
   }
 
   &__actions {
     display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-top: 12px;
-  }
-
-  .btn {
-    padding: 6px 12px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    background: #f5f5f5;
-    cursor: pointer;
-    font-size: 12px;
-    transition: background 0.2s;
-  }
-
-  .btn:hover {
-    background: #e0e0e0;
-  }
-
-  .btn-secondary {
-    background: #607d8b;
-    color: white;
-    border: none;
-  }
-
-  .btn-secondary:hover {
-    background: #546e7a;
-  }
-
-  .btn-danger {
-    background: #f44336;
-    color: white;
-    border: none;
-  }
-
-  .btn-danger:hover {
-    background: #e53935;
+    justify-content: flex-start;
+    gap: 10px;
   }
 }
 </style>

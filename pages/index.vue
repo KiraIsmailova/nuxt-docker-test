@@ -2,9 +2,9 @@
   <div class="main-page">
     <div class="main-page__title-wrap">
       <h1 class="main-page__title">Мои заметки</h1>
-      <button class="btn btn-primary" @click="showCreateModal = true">
-        Создать заметку
-      </button>
+      <BaseButton variant="note" @click="showCreateModal = true"
+        >Создать заметку</BaseButton
+      >
     </div>
 
     <div class="main-page__grid">
@@ -24,8 +24,8 @@
     <BaseModal v-model="showDeleteModal" title="Удалить заметку?">
       <p>Вы уверены, что хотите удалить заметку «{{ noteToDelete?.title }}»?</p>
       <template #footer>
-        <button class="btn" @click="showDeleteModal = false">Отмена</button>
-        <button class="btn btn-danger" @click="confirmDelete">Удалить</button>
+        <BaseButton @click="showDeleteModal = false">Отмена</BaseButton>
+        <BaseButton variant="danger" @click="confirmDelete">Удалить</BaseButton>
       </template>
     </BaseModal>
   </div>
@@ -77,16 +77,21 @@ function handleCreateNote(data: Omit<Note, "id">) {
 </script>
 
 <style lang="scss">
-body {
-  margin: 0;
-}
-
 .main-page {
   margin: 24px 0;
 
   &__title {
     margin: 0;
     color: #034206;
+    font-size: 36px;
+
+    @media (max-width: 992px) {
+      font-size: 28px;
+    }
+
+    @media (max-width: 576px) {
+      font-size: 24px;
+    }
   }
 
   &__grid {
@@ -114,40 +119,7 @@ body {
       flex-direction: column;
       align-items: flex-start;
       margin-bottom: 16px;
-    }
-  }
-}
-
-.btn {
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background: #f5f5f5;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background 0.2s;
-
-  &:hover {
-    background: #e0e0e0;
-  }
-
-  &-primary {
-    background: #4caf50;
-    color: white;
-    border: none;
-
-    &:hover {
-      background: #43a047;
-    }
-  }
-
-  &-danger {
-    background: #f44336;
-    color: white;
-    border: none;
-
-    &:hover {
-      background: #e53935;
+      gap: 10px;
     }
   }
 }

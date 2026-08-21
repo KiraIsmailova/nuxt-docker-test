@@ -1,67 +1,61 @@
 <template>
   <div class="edit-page">
-    <div v-if="loading" class="loading">Загрузка...</div>
-    <div v-else-if="!note" class="not-found">
-      <p>Заметка не найдена</p>
-      <NuxtLink to="/">Вернуться на главную</NuxtLink>
+    <div v-if="loading" class="edit-page__loading">Загрузка...</div>
+    <div v-else-if="!note" class="edit-page__not-found-wrap">
+      <p class="edit-page__not-found">Заметка не найдена</p>
+      <NuxtLink to="/" class="edit-page__back">Вернуться на главную</NuxtLink>
     </div>
     <div v-else class="edit-container">
-      <h1 class="edit-title">Редактирование заметки</h1>
+      <h1 class="edit-container__title">Редактирование заметки</h1>
       <form @submit.prevent="saveNote">
-        <div class="field">
-          <label for="note-title">Название заметки</label>
-          <input
+        <div class="edit-container__field">
+          <label class="edit-container__label" for="note-title"
+            >Название заметки</label
+          >
+          <BaseInput
             id="note-title"
             v-model="editableTitle"
             type="text"
-            class="input"
             placeholder="Введите название"
             required
           />
         </div>
 
-        <div class="todos-section">
+        <div class="edit-container__todos-section">
           <h2>Задачи</h2>
-          <ul class="todo-list">
+          <ul class="edit-container__todo-list">
             <li
               v-for="(todo, index) in editableTodos"
               :key="todo.id"
-              class="todo-item"
+              class="edit-container__todo-item"
             >
-              <input
-                type="checkbox"
-                :checked="todo.completed"
-                class="todo-checkbox"
+              <BaseCheckbox
+                v-model="todo.completed"
                 @change="toggleTodo(index)"
               />
-              <input
+              <BaseInput
                 v-model="todo.text"
                 type="text"
-                class="todo-input"
+                class="edit-container__todo-input"
                 placeholder="Текст задачи"
+                required
               />
-              <button
-                type="button"
-                class="btn btn-danger btn-sm"
-                @click="removeTodo(index)"
+              <BaseButton variant="danger" size="sm" @click="removeTodo(index)"
+                >Удалить</BaseButton
               >
-                Удалить
-              </button>
             </li>
           </ul>
-          <button type="button" class="btn btn-secondary" @click="addTodo">
-            Добавить задачу
-          </button>
+          <BaseButton variant="secondary" @click="addTodo"
+            >Добавить задачу</BaseButton
+          >
         </div>
 
-        <div class="actions">
-          <button type="submit" class="btn btn-primary">Сохранить</button>
-          <button type="button" class="btn" @click="askCancel">
-            Отменить редактирование
-          </button>
-          <button type="button" class="btn btn-danger" @click="askDelete">
-            Удалить заметку
-          </button>
+        <div class="edit-container__actions">
+          <BaseButton variant="primary" type="submit">Сохранить</BaseButton>
+          <BaseButton @click="askCancel">Отменить редактирование</BaseButton>
+          <BaseButton variant="danger" @click="askDelete"
+            >Удалить заметку</BaseButton
+          >
         </div>
       </form>
     </div>
@@ -69,26 +63,28 @@
     <BaseModal v-model="showDeleteModal" title="Удалить заметку?">
       <p>Вы уверены, что хотите удалить эту заметку?</p>
       <template #footer>
-        <button class="btn" @click="showDeleteModal = false">Отмена</button>
-        <button class="btn btn-danger" @click="confirmDelete">Удалить</button>
+        <BaseButton @click="showDeleteModal = false">Отмена</BaseButton>
+        <BaseButton variant="danger" @click="confirmDelete">Удалить</BaseButton>
       </template>
     </BaseModal>
 
     <BaseModal v-model="showCancelModal" title="Отменить редактирование?">
       <p>Все несохранённые изменения будут потеряны. Продолжить?</p>
       <template #footer>
-        <button class="btn" @click="showCancelModal = false">Остаться</button>
-        <button class="btn btn-danger" @click="confirmCancel">Отменить</button>
+        <BaseButton @click="showCancelModal = false">Остаться</BaseButton>
+        <BaseButton variant="danger" @click="confirmCancel"
+          >Отменить</BaseButton
+        >
       </template>
     </BaseModal>
 
     <BaseModal v-model="showRestoreDraftModal" title="Найден черновик">
       <p>Обнаружены несохранённые изменения. Восстановить их?</p>
       <template #footer>
-        <button class="btn" @click="discardDraft">Отклонить</button>
-        <button class="btn btn-primary" @click="restoreDraft">
-          Восстановить
-        </button>
+        <BaseButton @click="discardDraft">Отклонить</BaseButton>
+        <BaseButton variant="primary" @click="restoreDraft"
+          >Восстановить</BaseButton
+        >
       </template>
     </BaseModal>
   </div>
@@ -113,6 +109,9 @@ const note = ref<Note | null>(null);
 const editableTitle = ref("");
 const editableTodos = ref<Todo[]>([]);
 
+const initialTitle = ref("");
+const initialTodos = ref<Todo[]>([]);
+
 const showDeleteModal = ref(false);
 const showCancelModal = ref(false);
 const showRestoreDraftModal = ref(false);
@@ -135,6 +134,24 @@ function buildDraftNote(): Note | null {
   };
 }
 
+function hasChanges(): boolean {
+  if (editableTitle.value !== initialTitle.value) return true;
+  if (editableTodos.value.length !== initialTodos.value.length) return true;
+
+  for (let i = 0; i < editableTodos.value.length; i++) {
+    const current = editableTodos.value[i];
+    const initial = initialTodos.value[i];
+    if (
+      !initial ||
+      current?.text !== initial.text ||
+      current?.completed !== initial.completed
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 watch(
   [editableTitle, editableTodos],
   () => {
@@ -144,7 +161,8 @@ watch(
       isRestoringDraft.value
     )
       return;
-    if (note.value) {
+
+    if (note.value && hasChanges()) {
       const draft = buildDraftNote();
       if (draft) notesStore.saveDraft(noteId, draft);
     }
@@ -373,10 +391,17 @@ onMounted(() => {
     note.value = found;
     editableTitle.value = found.title;
     editableTodos.value = JSON.parse(JSON.stringify(found.todos));
+
+    initialTitle.value = found.title;
+    initialTodos.value = JSON.parse(JSON.stringify(found.todos));
+
     oldTitle = found.title;
   }
   loading.value = false;
-  isInitializing.value = false;
+
+  setTimeout(() => {
+    isInitializing.value = false;
+  }, 100);
 
   if (note.value && import.meta.client) {
     const draft = notesStore.loadDraft(noteId);
@@ -401,120 +426,84 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style scoped>
-.loading,
-.not-found {
-  text-align: center;
-  padding: 40px;
+<style lang="scss" scoped>
+.edit-page {
+  &__loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 24px;
+    margin: 0;
+    color: #034206;
+  }
+
+  &__not-found {
+    text-align: center;
+    font-size: 32px;
+    font-weight: bold;
+    margin: 0;
+    color: #034206;
+  }
+
+  &__back {
+    text-align: center;
+    font-size: 20px;
+    margin: 0;
+    color: #034206;
+  }
+
+  &__not-found-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding: 40px 0;
+  }
 }
 
 .edit-container {
   max-width: 700px;
   margin: 0 auto;
   padding: 20px;
-}
 
-.edit-title {
-  text-align: center;
-  margin-bottom: 20px;
-}
+  &__title {
+    text-align: center;
+    margin-bottom: 20px;
+  }
 
-.field {
-  margin-bottom: 20px;
-}
+  &__field {
+    margin-bottom: 20px;
+  }
 
-.input,
-.todo-input {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-}
+  &__todos-section {
+    margin-bottom: 20px;
+  }
 
-.input:focus,
-.todo-input:focus {
-  outline: none;
-  border-color: #4caf50;
-}
+  &__todo-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px;
+  }
 
-.todos-section {
-  margin-bottom: 20px;
-}
+  &__todo-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
 
-.todo-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 12px;
-}
+  &__todo-input {
+    flex: 1;
+  }
 
-.todo-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
+  &__actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
 
-.todo-checkbox {
-  flex-shrink: 0;
-}
-
-.todo-input {
-  flex: 1;
-}
-
-.actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.btn {
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background: #f5f5f5;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background 0.2s;
-}
-
-.btn:hover {
-  background: #e0e0e0;
-}
-
-.btn-primary {
-  background: #4caf50;
-  color: white;
-  border: none;
-}
-
-.btn-primary:hover {
-  background: #43a047;
-}
-
-.btn-secondary {
-  background: #607d8b;
-  color: white;
-  border: none;
-}
-
-.btn-secondary:hover {
-  background: #546e7a;
-}
-
-.btn-danger {
-  background: #f44336;
-  color: white;
-  border: none;
-}
-
-.btn-danger:hover {
-  background: #e53935;
-}
-
-.btn-sm {
-  padding: 4px 8px;
-  font-size: 12px;
+  &__label {
+    display: inline-block;
+    margin-bottom: 14px;
+  }
 }
 </style>

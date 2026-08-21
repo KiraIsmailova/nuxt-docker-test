@@ -13,14 +13,14 @@
 .header {
   background-color: #eff4f0;
   border-bottom: 1px solid #e5e7eb;
-  padding: 20px 32px;
+  padding: 1.25rem 2rem;
   position: sticky;
   top: 0;
   z-index: 100;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 
   @media (max-width: 576px) {
-    padding: 12px 16px;
+    padding: 0.75rem 1rem;
   }
 
   @media (prefers-contrast: high) {

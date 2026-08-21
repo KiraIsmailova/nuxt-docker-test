@@ -4,14 +4,7 @@
     <main class="layout__main">
       <slot />
     </main>
-    <footer>
-      <p>Контакты</p>
-      <ul>
-        <li>Блог</li>
-        <li>Почта</li>
-        <li>Телефон</li>
-      </ul>
-    </footer>
+    <Footer />
   </div>
 </template>
 

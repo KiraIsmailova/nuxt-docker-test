@@ -19,6 +19,7 @@ export const mockNotes: Note[] = [
       { id: 1, text: "Отправить отчёт", completed: true },
       { id: 2, text: "Подготовить презентацию", completed: false },
       { id: 3, text: "Созвон с командой", completed: false },
+      { id: 4, text: "Уточнить статус у разработчиков", completed: false },
     ],
   },
   {
